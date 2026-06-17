@@ -33,6 +33,17 @@
       -webkit-font-smoothing: antialiased;
     }
 
+    #scroll-progress {
+      position: fixed;
+      top: 0;
+      left: 0;
+      height: 3px;
+      background: linear-gradient(90deg, var(--accent), #7bafff);
+      width: 0%;
+      z-index: 101;
+      transition: width 0.05s ease-out;
+    }
+
     nav {
       position: fixed;
       top: 0; left: 0; right: 0;
@@ -217,7 +228,8 @@
       border-radius: 999px;
       border: 1px solid var(--accent-dim);
     }
-.edu-block {
+
+    .edu-block {
       background: var(--surface);
       border: 1px solid var(--border);
       border-radius: var(--radius);
@@ -262,7 +274,6 @@
       border-top: 1px solid var(--border);
     }
 
-    
     .misc-list {
       list-style: none;
       padding: 0;
@@ -280,6 +291,18 @@
       border-bottom: none;
     }
 
+    /* Scroll-triggered reveal animations */
+    .reveal {
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+    }
+
+    .reveal.active {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
     @media (max-width: 640px) {
       nav .inner { padding: 0 16px; }
       nav ul { gap: 16px; }
@@ -289,6 +312,8 @@
   </style>
 </head>
 <body>
+
+<div id="scroll-progress"></div>
 
 <nav>
   <div class="inner">
@@ -469,7 +494,6 @@
   </div>
 </section>
 
-
 <section id="misc">
   <h2>Miscellaneous</h2>
   <div class="card-grid">
@@ -559,10 +583,10 @@
   </div>
 </section>
 
-
-<!-- Scroll color morph -->
+<!-- Scroll color morph & Dynamic progress indicator -->
 <script>
 (function() {
+  // Color morphing on scroll
   const STOPS = [
     { pos: 0.00, bg: [11,13,20], surf: [20,23,33], border: [37,42,58], text: [232,234,237], sec: [144,152,176], acc: [75,139,245] },
     { pos: 0.18, bg: [15,13,28], surf: [23,21,40], border: [42,37,60], text: [233,232,238], sec: [150,145,180], acc: [105,92,230] },
@@ -584,8 +608,8 @@
           surf:   [lerp(a.surf[0], b.surf[0], t), lerp(a.surf[1], b.surf[1], t), lerp(a.surf[2], b.surf[2], t)],
           border: [lerp(a.border[0], b.border[0], t), lerp(a.border[1], b.border[1], t), lerp(a.border[2], b.border[2], t)],
           text:   [lerp(a.text[0], b.text[0], t), lerp(a.text[1], b.text[1], t), lerp(a.text[2], b.text[2], t)],
-          sec:   [lerp(a.sec[0], b.sec[0], t), lerp(a.sec[1], b.sec[1], t), lerp(a.sec[2], b.sec[2], t)],
-          acc:   [lerp(a.acc[0], b.acc[0], t), lerp(a.acc[1], b.acc[1], t), lerp(a.acc[2], b.acc[2], t)]
+          sec:    [lerp(a.sec[0], b.sec[0], t), lerp(a.sec[1], b.sec[1], t), lerp(a.sec[2], b.sec[2], t)],
+          acc:    [lerp(a.acc[0], b.acc[0], t), lerp(a.acc[1], b.acc[1], t), lerp(a.acc[2], b.acc[2], t)]
         };
       }
     }
@@ -595,10 +619,17 @@
 
   function rgb(c) { return `rgb(${Math.round(c[0])},${Math.round(c[1])},${Math.round(c[2])})`; }
 
+  const scrollIndicator = document.getElementById('scroll-progress');
   let ticking = false;
+
   function update() {
     let docHeight = document.documentElement.scrollHeight - window.innerHeight;
     let progress = docHeight > 0 ? window.scrollY / docHeight : 0;
+
+    // Update top progress bar width
+    scrollIndicator.style.width = `${progress * 100}%`;
+
+    // Interpolate and apply all CSS custom properties
     let c = getColors(progress);
     let root = document.documentElement;
     root.style.setProperty('--bg', rgb(c.bg));
@@ -616,7 +647,39 @@
     if (!ticking) { requestAnimationFrame(update); ticking = true; }
   }, { passive: true });
 
-  update();
+  update(); // Run once on load
+
+  // Intersection Observer for scroll-triggered reveal
+  const observerOptions = {
+    root: null,
+    threshold: 0.05,
+    rootMargin: '0px 0px -40px 0px'
+  };
+
+  const revealObserver = new IntersectionObserver((entries, observer) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('active');
+        observer.unobserve(entry.target); // Fire once only
+      }
+    });
+  }, observerOptions);
+
+  // Observe sections and education blocks
+  document.querySelectorAll('section, .edu-block').forEach(el => {
+    el.classList.add('reveal');
+    revealObserver.observe(el);
+  });
+
+  // Stagger-reveal cards within grids
+  document.querySelectorAll('.card-grid').forEach(grid => {
+    grid.querySelectorAll('.card').forEach((card, index) => {
+      card.classList.add('reveal');
+      card.style.transitionDelay = `${(index % 3) * 0.1}s`; // 0s / 0.1s / 0.2s stagger
+      revealObserver.observe(card);
+    });
+  });
+
 })();
 </script>
 
