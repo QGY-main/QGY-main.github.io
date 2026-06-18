@@ -75,7 +75,7 @@
 
     nav ul {
       display: flex;
-      gap: 28px;
+      gap: 20px;
       list-style: none;
       align-items: center;
     }
@@ -270,12 +270,117 @@
       border-bottom: none;
     }
 
-    footer {
-      text-align: center;
-      padding: 32px 24px;
-      font-size: .8rem;
+    /* Reference Design Quote Box - Beautiful Dynamic Transitions */
+    .quote-box {
+      position: relative;
+      background: #0a0d16; /* Strict deep dark blue background for dark mode */
+      border: 1px solid #1e293b; /* Dark slate border */
+      border-radius: var(--radius);
+      padding: 72px 40px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      text-align: left;
+      transition: background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .quote-mark {
+      font-size: 8rem;
+      font-family: Georgia, serif;
+      line-height: 1;
+      position: absolute;
+      color: #3b82f6; /* Vibrant blue quotation mark color */
+      opacity: 0.18;
+      user-select: none;
+      transition: color 0.3s ease, opacity 0.3s ease;
+    }
+
+    .quote-mark.top {
+      top: 10px;
+      left: 20px;
+    }
+
+    .quote-mark.bottom {
+      bottom: -35px;
+      right: 20px;
+    }
+
+    .quote-content {
+      font-size: clamp(0.95rem, 2.2vw, 1.25rem); /* Sleek and compact */
+      font-weight: 500;
+      letter-spacing: -0.01em;
+      line-height: 1.6;
+      color: #ffffff; /* Default dark mode white text */
+      margin-bottom: 24px;
+      z-index: 1;
+      transition: color 0.3s ease;
+    }
+
+    .quote-highlight {
+      color: #60a5fa; /* Soft light-blue highlight for contrast on dark backdrop */
+      font-weight: 600;
+      transition: color 0.3s ease;
+    }
+
+    .quote-author {
+      font-size: 0.8rem;
+      font-weight: 700;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: #94a3b8; /* Light-grey Author text */
+      z-index: 1;
+      display: inline-flex;
+      align-items: center;
+      transition: color 0.3s ease;
+    }
+
+    /* Contact Links Styles */
+    .contact-card {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .contact-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: var(--accent-dim);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      color: var(--accent);
+      transition: background-color 0.3s ease, color 0.3s ease;
+    }
+
+    .contact-details {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .contact-details h3 {
+      font-size: 0.875rem;
+      font-weight: 500;
       color: var(--text-secondary);
-      border-top: 1px solid var(--border);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 2px;
+    }
+
+    .contact-link {
+      text-decoration: none;
+      color: var(--text);
+      font-weight: 600;
+      font-size: 1rem;
+      transition: color 0.2s ease;
+      word-break: break-all;
+    }
+
+    .contact-link:hover {
+      color: var(--accent);
     }
 
     .misc-list {
@@ -295,6 +400,11 @@
       border-bottom: none;
     }
 
+    /* Spacer for the bottom layout */
+    .spacer-bottom {
+      height: 80px;
+    }
+
     /* Scroll-triggered reveal animations */
     .reveal {
       opacity: 0;
@@ -309,7 +419,6 @@
 
     /* --------------------------------------
        LIGHT MODE STYLES & OVERRIDES 
-       (Only targets light mode state, leaving dark mode unchanged)
        -------------------------------------- */
     .theme-toggle {
       background: transparent;
@@ -343,11 +452,39 @@
       box-shadow: 0 4px 16px rgba(0,0,0,.08);
     }
 
+    /* LIGHT MODE STYLES: QUOTE BOX OVERRIDES */
+    body.light-mode .quote-box {
+      background: #ffffff; /* Clean bright canvas background */
+      border: 1px solid #e2e8f0; /* Modern slate border */
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05); /* Premium soft shadow */
+    }
+    body.light-mode .quote-content {
+      color: #1e293b; /* Premium slate text for perfect high-end contrast */
+    }
+    body.light-mode .quote-highlight {
+      color: #2563eb; /* True vibrant digital blue highlight */
+    }
+    body.light-mode .quote-author {
+      color: #64748b; /* Slate-grey signature */
+    }
+    body.light-mode .quote-mark {
+      color: var(--accent); /* Uses current adaptive accent shade */
+      opacity: 0.12; /* Slightly softer opacity on light background */
+    }
+
+    @media (max-width: 880px) {
+      nav ul { display: none; /* Simplifies nav on mobile/tablets to prevent overflow */ }
+      nav .inner { justify-content: center; position: relative; }
+      nav .logo { position: absolute; left: 24px; }
+      .theme-toggle { position: absolute; right: 24px; }
+    }
+
     @media (max-width: 640px) {
       nav .inner { padding: 0 16px; }
-      nav ul { gap: 16px; }
       .hero { padding-top: 100px; }
       section { padding: 40px 16px; }
+      .quote-box { padding: 56px 24px; }
+      .quote-mark { font-size: 6rem; }
     }
   </style>
 </head>
@@ -363,10 +500,12 @@
       <li><a href="#education">Education</a></li>
       <li><a href="#experience">Experience</a></li>
       <li><a href="#skills">Skills</a></li>
-      <li><a href="#projects">Pending Projects</a></li>
+      <li><a href="#projects">Projects</a></li>
       <li><a href="#misc">Awards</a></li>
       <li><a href="#cca">CCA</a></li>
-      <!-- Added Theme Toggle Button -->
+      <li><a href="#vision">Vision</a></li>
+      <li><a href="#contact">Contact</a></li>
+      <!-- Theme Toggle Button -->
       <li>
         <button id="theme-toggle" class="theme-toggle" aria-label="Toggle Theme">
           <svg id="theme-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -639,6 +778,60 @@
   </div>
 </section>
 
+<section id="vision">
+  <h2>Vision</h2>
+  <div class="quote-box">
+    <!-- Big Inverted Commas -->
+    <span class="quote-mark top">&#8220;</span>
+    
+    <div class="quote-content">
+      AI is more than a technical advancement; it is a fundamental shift in our ability to solve the world’s most pressing problems. My goal is to innovate beyond current limitations, creating technology that bridges the divide between potential and tangible societal impact. 
+      <span class="quote-highlight">Through relentless innovation and continuous refinement, I hope to build the next wave of technology designed to deliver tangible, lasting impact on society.</span>
+    </div>
+    
+    <!-- Signature Line -->
+    <div class="quote-author">
+      &mdash; Qu Guanyu
+    </div>
+
+    <span class="quote-mark bottom">&#8221;</span>
+  </div>
+</section>
+
+<section id="contact">
+  <h2>Get In Touch</h2>
+  <div class="card-grid">
+    <!-- Email Card -->
+    <div class="card contact-card">
+      <div class="contact-icon">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+          <polyline points="22,6 12,13 2,6"></polyline>
+        </svg>
+      </div>
+      <div class="contact-details">
+        <h3>Email</h3>
+        <a href="mailto:quguanyu22@gmail.com" class="contact-link">quguanyu22@gmail.com</a>
+      </div>
+    </div>
+    <!-- GitHub Card -->
+    <div class="card contact-card">
+      <div class="contact-icon">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path>
+        </svg>
+      </div>
+      <div class="contact-details">
+        <h3>GitHub</h3>
+        <a href="https://github.com/QGY-main" target="_blank" rel="noopener" class="contact-link">QGY-main</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Sleek Bottom Spacer -->
+<div class="spacer-bottom"></div>
+
 <!-- Scroll color morph & Dynamic progress indicator -->
 <script>
 (function() {
@@ -652,7 +845,7 @@
     { pos: 1.00, bg: [7,9,16], surf: [16,18,28], border: [30,33,48], text: [225,227,233], sec: [135,140,168], acc: [70,130,240] }
   ];
 
-  // Added: Clean, professional, high-contrast Light Mode color array
+  // Clean, professional, high-contrast Light Mode color array
   const LIGHT_STOPS = [
     { pos: 0.00, bg: [250,250,250], surf: [255,255,255], border: [230,230,230], text: [33,37,41], sec: [73,80,87], acc: [37,99,235] },
     { pos: 0.18, bg: [247,248,250], surf: [255,255,255], border: [225,227,230], text: [33,37,41], sec: [73,80,87], acc: [40,90,220] },
@@ -755,7 +948,7 @@
   }, observerOptions);
 
   // Observe sections and education blocks
-  document.querySelectorAll('section, .edu-block').forEach(el => {
+  document.querySelectorAll('section, .edu-block, .quote-box').forEach(el => {
     el.classList.add('reveal');
     revealObserver.observe(el);
   });
